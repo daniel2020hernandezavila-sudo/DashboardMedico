@@ -59,12 +59,12 @@ base1 = base1.loc[
 # =====================================================
 # ORDEN DE MESES
 # =====================================================
-
 orden_meses = [
     "enero",
     "febrero",
     "marzo",
-    "abril"
+    "abril",
+    "mayo"
 ]
 
 base1["mes"] = pd.Categorical(
@@ -195,13 +195,15 @@ tabla_cumplimiento["Promedio General"] = (
     .mean(axis=1)
 )
 
-for col in columnas_existentes + ["Promedio General"]:
+# Formatear todas las columnas numéricas excepto Especialidad y Médico
 
-    tabla_cumplimiento[col] = tabla_cumplimiento[col].apply(
-        lambda x: f"{x:.1f}%"
-        if pd.notnull(x)
-        else ""
-    )
+for col in tabla_cumplimiento.columns:
+    if col not in ["Especialidad", "Médico"]:
+        tabla_cumplimiento[col] = tabla_cumplimiento[col].apply(
+            lambda x: f"{x:.1f}%" if pd.notnull(x) else ""
+        )
+
+
 
 estilo_cump = tabla_cumplimiento.style \
     .set_properties(**{
@@ -353,14 +355,11 @@ tabla_rendimiento["Promedio General"] = (
     .mean(axis=1)
 )
 
-for col in columnas_existentes_r + ["Promedio General"]:
-
-    tabla_rendimiento[col] = tabla_rendimiento[col].apply(
-        lambda x: f"{x:.1f}%"
-        if pd.notnull(x)
-        else ""
-    )
-
+for col in tabla_rendimiento.columns:
+    if col not in ["Especialidad", "Médico"]:
+        tabla_rendimiento[col] = tabla_rendimiento[col].apply(
+            lambda x: f"{x:.1f}%" if pd.notnull(x) else ""
+        )
 estilo_r = tabla_rendimiento.style \
     .set_properties(**{
         'background-color': '#1E1E1E',
@@ -665,9 +664,97 @@ line-height:1.8;
 # RESOLUTIVIDAD Y REMISIONES
 # =====================================================
 
+
+# ==========================================
+# TABLA RESOLUTIVIDAD Y REMISIONES
+# ==========================================
+
 st.markdown("---")
 
 st.title("Resolutividad y Remisiones")
+
+
+st.subheader("Tabla Resumen de Resolutividad y Remisiones")
+
+# Resolutividad
+res1 = df[[
+    "especialidad",
+    "NOMBRE DEL MEDICO",
+    "mes",
+    "Total  de resolutividad"
+]].copy()
+
+res1["Indicador"] = "Resolutividad"
+res1 = res1.rename(
+    columns={"Total  de resolutividad": "Porcentaje"}
+)
+
+# Remisiones
+res2 = df[[
+    "especialidad",
+    "NOMBRE DEL MEDICO",
+    "mes",
+    "% De remisiones"
+]].copy()
+
+res2["Indicador"] = "Remisiones"
+res2 = res2.rename(
+    columns={"% De remisiones": "Porcentaje"}
+)
+
+# Unir ambas tablas
+tabla_resol = pd.concat([res1, res2])
+
+# Crear tabla dinámica
+tabla_resol = tabla_resol.pivot_table(
+    index=[
+        "especialidad",
+        "NOMBRE DEL MEDICO",
+        "Indicador"
+    ],
+    columns="mes",
+    values="Porcentaje",
+    aggfunc="mean"
+).reset_index()
+
+# Renombrar columnas
+tabla_resol.columns = (
+    ["Especialidad", "Médico", "Indicador"] +
+    [str(col).capitalize() for col in tabla_resol.columns[3:]]
+)
+
+# Formato porcentaje
+for col in tabla_resol.columns:
+    if col not in ["Especialidad", "Médico", "Indicador"]:
+        tabla_resol[col] = tabla_resol[col].apply(
+            lambda x: f"{x:.1f}%" if pd.notnull(x) else ""
+        )
+
+# Estilo
+estilo_resol = tabla_resol.style \
+    .set_properties(**{
+        'background-color': '#1E1E1E',
+        'color': 'white',
+        'border-color': 'gray',
+        'font-size': '13px',
+        'text-align': 'center'
+    }) \
+    .set_table_styles([
+        {
+            'selector': 'th',
+            'props': [
+                ('background-color', '#102030'),
+                ('color', 'white'),
+                ('border', '1px solid gray')
+            ]
+        }
+    ])
+
+st.write(estilo_resol)
+
+
+
+
 
 resol = df.groupby("mes")[
     [
