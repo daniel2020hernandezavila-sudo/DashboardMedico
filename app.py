@@ -44,6 +44,12 @@ section[data-testid="stSidebar"] {
 # =====================================================
 
 base1 = pd.read_excel("Dashboard.xlsx")
+base1["mes"] = (
+    base1["mes"]
+    .astype(str)
+    .str.strip()
+    .str.lower()
+)
 
 # =====================================================
 # LIMPIEZA
@@ -64,8 +70,15 @@ orden_meses = [
     "febrero",
     "marzo",
     "abril",
-    "mayo"
+    "mayo",
+    "junio"
 ]
+
+
+
+
+
+
 
 base1["mes"] = pd.Categorical(
     base1["mes"],
@@ -186,7 +199,7 @@ tabla_cumplimiento.columns = (
 )
 
 columnas_existentes = [
-    col for col in ["Enero", "Febrero", "Marzo", "Abril"]
+    col for col in ["Enero", "Febrero", "Marzo", "Abril","Mayo","Junio"]
     if col in tabla_cumplimiento.columns
 ]
 
@@ -346,7 +359,7 @@ tabla_rendimiento.columns = (
 )
 
 columnas_existentes_r = [
-    col for col in ["Enero", "Febrero", "Marzo", "Abril"]
+    col for col in ["Enero", "Febrero", "Marzo", "Abril","Mayo","Junio"]
     if col in tabla_rendimiento.columns
 ]
 
