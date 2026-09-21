@@ -72,7 +72,8 @@ orden_meses = [
     "abril",
     "mayo",
     "junio",
-    "julio"
+    "julio",
+    "agosto"
 ]
 
 
@@ -200,7 +201,7 @@ tabla_cumplimiento.columns = (
 )
 
 columnas_existentes = [
-    col for col in ["Enero", "Febrero", "Marzo", "Abril","Mayo","Junio","julio"]
+    col for col in ["Enero", "Febrero", "Marzo", "Abril","Mayo","Junio","julio","agosto"]
     if col in tabla_cumplimiento.columns
 ]
 
@@ -360,7 +361,7 @@ tabla_rendimiento.columns = (
 )
 
 columnas_existentes_r = [
-    col for col in ["Enero", "Febrero", "Marzo", "Abril","Mayo","Junio","julio"]
+    col for col in ["Enero", "Febrero", "Marzo", "Abril","Mayo","Junio","julio","agosto"]
     if col in tabla_rendimiento.columns
 ]
 
